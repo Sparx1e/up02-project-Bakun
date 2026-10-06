@@ -2,6 +2,17 @@
 from datetime import datetime
 from discount import calculate_price_with_discount
 
+class Order:
+    def __init__(self, id, date, client, product_id, quantity):
+        self.id = id
+        self.date = date
+        self.client = client
+        self.product_id = product_id
+        self.quantity = quantity
+
+    def order_info(self):
+        return f"Заказ №{self.id} от {self.date}: {self.client}"    
+        return f"Заказ №{self.id} от {self.date}: {self.client}"
 
 class Product:
     """Класс Товар."""
@@ -32,3 +43,4 @@ class Product:
             f"{self.name} ({self.category}): "
             f"{self.price} руб. × {self.quantity} = {self.total()} руб."
         )
+    
