@@ -1,0 +1,1 @@
+DB_PATH = "C:/Users/funny/OneDrive/Desktop/1/Базаданных/databases/db_variant_21"
