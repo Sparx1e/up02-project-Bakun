@@ -2,8 +2,10 @@
 from datetime import datetime
 from discount import calculate_price_with_discount
 
+
 class Product:
     """Класс Товар."""
+
     def __init__(self, product_id, name, category, price, quantity):
         self.id = product_id
         self.name = name
@@ -24,5 +26,7 @@ class Product:
         return "много" if self.quantity > 5 else "мало"
 
     def info(self):
-        return (f"{self.name} ({self.category}): "
-                f"{self.price} руб. × {self.quantity} = {self.total()} руб.")
+        return (
+            f"{self.name} ({self.category}): "
+            f"{self.price} руб. × {self.quantity} = {self.total()} руб."
+        )
