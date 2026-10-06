@@ -15,6 +15,9 @@ class Order:
         return f"Заказ №{self.id} от {self.date}: {self.client}"
 
 class Product:
+    def is_available(self):
+        """Товар доступен для заказа?"""
+        return self.quantity > 0
     """Класс Товар."""
     def discounted_price(self):
         """Цена со скидкой 25% (упрощённо)."""      
