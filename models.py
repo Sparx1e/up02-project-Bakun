@@ -42,3 +42,20 @@ class Product:
     def is_available(self):
         """Возвращает True, если количество > 0."""
         return self.quantity > 0
+class Order:
+    """Класс Заказ."""
+    def __init__(self, order_id, date, client, product, quantity):
+        self.id = order_id
+        self.date = date
+        self.client = client
+        self.product = product      # объект Product
+        self.quantity = quantity
+
+    def total(self):
+        """Стоимость заказа."""
+        return self.product.price * self.quantity
+
+    def info(self):
+        """Строка с информацией о заказе."""
+        return (f"Заказ №{self.id} от {self.date}: "
+                f"{self.client} - {self.product.title} × {self.quantity}") 
