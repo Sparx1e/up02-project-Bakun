@@ -7,7 +7,7 @@ class Product:
     """Класс Товар."""
     def discounted_price(self):
         """Цена со скидкой 25% (упрощённо)."""      
-        return self.price * 0.90
+        return self.price * 0.75
     def __init__(self, product_id, name, category, price, quantity):
         self.id = product_id
         self.name = name
