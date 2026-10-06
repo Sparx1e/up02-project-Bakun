@@ -1,1 +1,1 @@
-DB_PATH = "C:/Users/funny/OneDrive/Desktop/1/Базаданных/databases/db_variant_21"
+DB_PATH = "C:/Users/funny/OneDrive/Документы/GitHub/up02-project-Bakun/up02-project-Bakun/databases.db_variant_21"
