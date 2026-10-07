@@ -4,7 +4,7 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 import os
 
-from config import DB_PATH, COLOR_HIGHLIGHT, FONT_FAMILY
+from config import DB_PATH, FONT_FAMILY
 
 
 def create_product_card(parent, product):
@@ -16,7 +16,7 @@ def create_product_card(parent, product):
     """
     # Определяем фон: подсветка, если количество ≤3
     qty = product[5]   # ⚠️ Замените индекс на свой!
-    bg_color = COLOR_HIGHLIGHT if qty <= 3 else "white"
+    bg_color = "#ff8000" if qty <= 3 else "white"
 
     # Карточка — рамка со всех сторон
     card = tk.Frame(parent, bg=bg_color, bd=1, relief="solid")
@@ -26,7 +26,7 @@ def create_product_card(parent, product):
     img_frame = tk.Frame(card, bg=bg_color)
     img_frame.pack(side="left", padx=10, pady=10)
 
-    image_path = product[6] if product[6] else r"C:\Users\funny\OneDrive\Рисунки\Screenshots\image.png"
+    image_path = product[6] if product[6] else r"C:/Users/funny/OneDrive/Документы/GitHub/up02-project-Bakun/up02-project-Bakun/resources/image.png"
     if not os.path.exists(image_path):
         image_path = "resources/picture.png"
 
