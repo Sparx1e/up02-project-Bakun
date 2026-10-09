@@ -11,6 +11,13 @@ def test_names_not_empty():
             print(f"❌ Товар id={p[0]}: пустое название")
             return False
     return True
+def test_has_image():
+    """Проверяет, что хотя бы у одного товара есть изображение."""
+    products = get_all_products()
+    for p in products:
+        if p[6]: # Предполагая, что индекс 6 - это обложка (обложка)
+            return True
+    return False
 
 def test_db_available():
     """
