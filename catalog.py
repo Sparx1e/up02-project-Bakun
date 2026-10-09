@@ -5,7 +5,12 @@ from PIL import Image, ImageTk
 import os
 
 from config import DB_PATH, FONT_FAMILY
-
+from resources import get_product_image
+from styles import (
+    COLOR_MAIN_BG, COLOR_HIGHLIGHT,
+    FONT_FAMILY, FONT_SIZE_NORMAL, FONT_SIZE_HEADER,
+    font
+)
 
 def create_product_card(parent, product):
     """
@@ -22,23 +27,19 @@ def create_product_card(parent, product):
     card = tk.Frame(parent, bg=bg_color, bd=1, relief="solid")
     card.pack(fill="x", padx=10, pady=5)
 
-    # === Изображение (слева) ===
+    # Изображение (слева)
     img_frame = tk.Frame(card, bg=bg_color)
     img_frame.pack(side="left", padx=10, pady=10)
 
-    image_path = product[6] if product[6] else r"C:/Users/funny/OneDrive/Документы/GitHub/up02-project-Bakun/up02-project-Bakun/resources/image.png"
-    if not os.path.exists(image_path):
-        image_path = "resources/picture.png"
-
-    try:
-        img = Image.open(image_path).resize((100, 100))
-        photo = ImageTk.PhotoImage(img)
+    photo = get_product_image(product[6], size=(100, 100))
+    if photo:
         img_label = tk.Label(img_frame, image=photo, bg=bg_color)
         img_label.image = photo   # type: ignore # сохраняем ссылку!
         img_label.pack()
-    except Exception:
-        tk.Label(img_frame, text="[ФОТО]", bg=bg_color,
-                 width=10, height=5).pack()
+    else:
+        tk.Label(img_frame, text="[НЕТ ФОТО]", bg=bg_color,
+                width=10, height=5).pack()
+
 
     # === Текстовая часть (справа) ===
     text_frame = tk.Frame(card, bg=bg_color)

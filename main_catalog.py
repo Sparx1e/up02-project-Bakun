@@ -1,58 +1,78 @@
-"""Главное окно приложения с каталогом."""
+"""Главное окно с каталогом."""
 import tkinter as tk
 from tkinter import ttk
-from PIL import Image, ImageTk  # <--- ДОБАВЛЕНЫ ЭТИ ИМПОРТЫ
-from config import APP_TITLE, FONT_FAMILY
-from catalog import create_product_card
 from db_products import get_all_products
+from styles import COLOR_SECONDARY_BG, FONT_FAMILY, FONT_SIZE_TITLE, font
+from config import APP_TITLE
+from catalog import create_product_card
+from resources import load_image_proportional, PATH_LOGO, PATH_ICON
 
 class CatalogWindow:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title(APP_TITLE)
         self.root.geometry("900x700")
+
+        # Иконка приложения
+        self.set_icon()
+
         self.build_ui()
         self.load_products()
 
-    def build_ui(self):
-        # Заголовок
-        header = tk.Frame(self.root, bg="#D2F6E7")
-        header.pack(fill="x")
-        from PIL import Image, ImageDraw
-
-        # === ДОБАВЛЯЕМ ЛОГОТИП (Задание 2) ===
+    def set_icon(self):
+        """Устанавливает иконку приложения (кроссплатформенно)."""
+        import os
         try:
-            logo = Image.open("resources/logo.png").resize((50, 50))
-            logo_photo = ImageTk.PhotoImage(logo)
-            logo_label = tk.Label(header, image=logo_photo, bg="#D2F6E7")
-            from PIL import Image, ImageDraw
-            
-            # ВАЖНО: Сохраняем ссылку на изображение, чтобы оно не исчезло
-            logo_label.image = logo_photo   # type: ignore
-            logo_label.pack(side="left", padx=10)
+            if os.name == "nt":  # Windows
+                self.root.iconbitmap(PATH_ICON)
+            else:  # Linux/Mac
+                icon_img = load_image_proportional(
+                    PATH_ICON.replace(".ico", ".png"),
+                    max_size=(32, 32)
+                )
+                if icon_img:
+                    self.root.iconphoto(True, icon_img)
         except Exception as e:
-            print(f"Не удалось загрузить логотип: {e}")
+            print(f"Не удалось установить иконку: {e}")
 
-        # Текст заголовка
-        tk.Label(header, text="КАТАЛОГ ТОВАРОВ", font=(FONT_FAMILY, 16, "bold"), bg="#D2F6E7").pack(pady=15)
+    def build_ui(self):
+        # Шапка с логотипом и заголовком
+        header = tk.Frame(self.root, bg=COLOR_SECONDARY_BG, height=80)
+        header.pack(fill="x")
+        header.pack_propagate(False)
+
+        # Логотип (слева) — с сохранением пропорций!
+        logo = load_image_proportional(PATH_LOGO, max_size=(60, 60))
+        if logo:
+            logo_label = tk.Label(header, image=logo, bg=COLOR_SECONDARY_BG)
+            logo_label.image = logo # type: ignore
+            logo_label.pack(side="left", padx=15)
+        else:
+            tk.Label(header, text="[ЛОГОТИП]", bg=COLOR_SECONDARY_BG).pack(side="left", padx=15)
+
+        # Заголовок (по центру)
+        tk.Label(header, text="КАТАЛОГ ТОВАРОВ",
+                 font=font(FONT_SIZE_TITLE, bold=True),
+                 bg=COLOR_SECONDARY_BG).pack(expand=True)
 
         # Область с прокруткой
         self.canvas = tk.Canvas(self.root, bg="white", highlightthickness=0)
         scrollbar = ttk.Scrollbar(self.root, orient="vertical", command=self.canvas.yview)
         self.catalog_frame = tk.Frame(self.canvas, bg="white")
-
+        
         self.catalog_frame.bind(
             "<Configure>",
             lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all"))
         )
         
         self.canvas.create_window((0, 0), window=self.catalog_frame, anchor="nw")
-        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+        self.canvas.configure(yscrollcommand=scrollbar.set)
+        
         self.canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
 
     def load_products(self):
-        products = get_all_products()   # без db.
+        products = get_all_products() 
         for p in products:
             create_product_card(self.catalog_frame, p)
 

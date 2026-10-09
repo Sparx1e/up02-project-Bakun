@@ -1,4 +1,11 @@
-DB_PATH = "databases/db_variant_21.db"
-COLOR_HIGHLIGHT="white"
 FONT_FAMILY="bold"
-APP_TITLE="900x700"
+"""Настройки проекта."""
+
+# Путь к БД
+DB_PATH = "databases/db_variant_21.db"   # замените N
+
+# Название компании-заказчика
+COMPANY_NAME = "Библиотека"
+
+# Заголовок приложения
+APP_TITLE = f"Система заказа — {COMPANY_NAME}"
