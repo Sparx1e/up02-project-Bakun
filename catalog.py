@@ -42,25 +42,24 @@ def _add_image(card, product, bg_color):
                  width=10, height=5).pack()
 
 def _add_text_info(card, product, bg_color, qty):
-    """Добавляет текстовую информацию о товаре (с обработкой крайних случаев из 5.4)."""
+    """Добавляет текстовую информацию о товаре."""
     text_frame = tk.Frame(card, bg=bg_color)
     text_frame.pack(side="left", fill="both", expand=True, padx=10, pady=10)
 
-    # === ЗАДАНИЕ 5.4. Обработка крайних случаев (Вариант 21) ===
-    # Индексы: 1 - жанр, 2 - автор, 3 - название, 4 - цена
-    category = product[1] if product[1] else "[Без жанра]"
-    author = product[2] if product[2] else "[Без автора]"
-    name = product[3] if product[3] else "[Без названия]"
-    price = product[4] if product[4] is not None else 0
-    
-    # В вашей БД нет поля "Состав", поэтому ставим заглушку
-    composition = "[Не указан]"
+    name = product[1] if product[1] else "[Без названия]"
+    production = product[3] if product[3] else "[Без производства]"
+    category = product[2] if product[2] else "[Без категории]"
+    composition = product[4] if product[4] else "[Не указан]"
+    price = product[5] if product[5] is not None else 0
 
-    # Вывод текста на экран
-    _add_label(text_frame, f"{author} | {name}",
+    _add_label(text_frame, f"{production} | {name}",
                bg_color, bold=True, size=FONT_SIZE_HEADER)
-    _add_label(text_frame, f"Категория (Жанр): {category}", bg_color)
-    _add_label(text_frame, f"Количество: {_indicator(qty)} ({qty})", bg_color)
+    _add_label(text_frame, f"Категория: {category}", bg_color)
+
+    # Количество с индикатором
+    indicator = _indicator(qty)
+    _add_label(text_frame, f"Количество: {indicator} ({qty})", bg_color)
+
     _add_label(text_frame, f"Состав: {composition}", bg_color)
     _add_label(text_frame, f"{price} руб.",
                bg_color, bold=True, size=FONT_SIZE_HEADER, align="e")
@@ -72,5 +71,10 @@ def _add_label(parent, text, bg_color, bold=False,
              bg=bg_color, anchor=align).pack(fill="x") # type: ignore
 
 def _indicator(qty):
-    """Индикатор «много/мало» (порог 5)."""
+    """
+    Индикатор «много/мало» (порог 5).
+    
+    :param qty: количество товара
+    :return: «много» или «мало»
+    """
     return "много" if qty > 5 else "мало"
