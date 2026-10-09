@@ -10,6 +10,11 @@ from styles import (
     COLOR_MAIN_BG, COLOR_HIGHLIGHT,
     FONT_SIZE_NORMAL, FONT_SIZE_HEADER, font
 )
+# Функция для открытия формы просмотра
+def _open_view(parent, product):
+    from view_form import ViewForm
+    ViewForm(parent, product)
+
 
 def create_product_card(parent, product):
     """Создаёт карточку товара по макету."""
@@ -25,6 +30,10 @@ def create_product_card(parent, product):
 
     _add_image(card, product, bg_color)
     _add_text_info(card, product, bg_color, qty)
+    card.bind("<Button-1>", lambda e: _open_view(parent, product))
+    for child in card.winfo_children():
+        child.bind("<Button-1>", lambda e: _open_view(parent, product))
+    return card
 
     return card
 
