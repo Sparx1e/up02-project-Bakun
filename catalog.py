@@ -13,8 +13,12 @@ from styles import (
 
 def create_product_card(parent, product):
     """Создаёт карточку товара по макету."""
-    qty = product[5]   # ⚠️ Замените на свой индекс!
+    qty = product[5]
     bg_color = _get_card_color(qty)
+
+    # Диагностика
+    print(f"[CARD] id={product[0]}, name={product[1]}, "
+          f"qty={qty}, bg={bg_color}, indicator={_indicator(qty)}")
 
     card = tk.Frame(parent, bg=bg_color, bd=1, relief="solid")
     card.pack(fill="x", padx=10, pady=5)
