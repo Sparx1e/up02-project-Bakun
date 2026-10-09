@@ -11,7 +11,18 @@ PATH_ICON = "resources/icon.ico"
 # Кэш изображений
 _image_cache = {}
 
+from PIL import Image, ImageDraw, ImageFont
 
+def create_placeholder():
+    img = Image.new('RGB', (100, 100), color='#D2F6E7')
+    d = ImageDraw.Draw(img)
+    try:
+        fnt = ImageFont.truetype("calibri.ttf", 15)
+    except:
+        fnt = ImageFont.load_default()
+    d.text((10, 40), "Нет фото", fill='#70B2AF', font=fnt)
+    img.save("resources/picture.png")
+    
 def load_image(path, size=(100, 100)):
     """
     Загружает изображение с указанным размером.
