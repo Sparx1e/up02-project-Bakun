@@ -35,6 +35,8 @@ class ViewForm:
         self.build_ui()
     
     def build_ui(self):
+        if len(self.product) > 9:
+            self._add_field(info_frame, "Описание", self.product[9]) # type: ignore
         """Строит интерфейс формы."""
         # Шапка — ГОТОВО
         header = tk.Frame(self.window, bg=COLOR_SECONDARY_BG, height=60)
@@ -70,7 +72,10 @@ class ViewForm:
         self._add_field(info_frame, "Состав", self.product[4])
         self._add_field(info_frame, "Цена", f"{self.product[5]} руб.")
         self._add_field(info_frame, "Размеры", self.product[8])
-        
+        tk.Label(img_frame, text="Количество:", bg=COLOR_MAIN_BG).pack(side="left", padx=5)
+        self.qty_entry = tk.Entry(img_frame)
+        self.qty_entry.pack(side="left")
+        self.qty_entry.insert(0, "1")
         # Кнопки — ДОПИШИТЕ
         btn_frame = tk.Frame(self.window, bg=COLOR_MAIN_BG)
         btn_frame.pack(fill="x", pady=10)
