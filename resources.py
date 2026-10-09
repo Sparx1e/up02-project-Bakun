@@ -22,7 +22,6 @@ def create_placeholder():
         fnt = ImageFont.load_default()
     d.text((10, 40), "Нет фото", fill='#70B2AF', font=fnt)
     img.save("resources/picture.png")
-    
 def load_image(path, size=(100, 100)):
     """
     Загружает изображение с указанным размером.
