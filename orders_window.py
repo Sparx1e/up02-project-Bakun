@@ -50,14 +50,14 @@ class OrdersWindow:
         self.tree.pack(fill="both", expand=True, padx=20, pady=20)
 
         # Привязка двойного клика
-        self.tree.bind("<Double-1>", self.on_order_select)
+        self.tree.bind("<Double-1>", self.on_order_select) # type: ignore
 
         # Кнопки
         btn_frame = tk.Frame(self.window, bg=COLOR_MAIN_BG)
         btn_frame.pack(fill="x", pady=10)
 
         tk.Button(btn_frame, text="Просмотр состава",
-                  command=self.on_order_select,
+                  command=self.on_order_select, # type: ignore
                   bg=COLOR_ACCENT, fg="white",
                   font=font(FONT_SIZE_NORMAL),
                   padx=15, pady=5).pack(side="left", padx=20)
@@ -93,17 +93,12 @@ class OrdersWindow:
         except Exception as e:
             messagebox.showerror("Ошибка", f"Не удалось загрузить заказы:\n{e}")
 
-    def on_order_select(self, event=None):
-        """Обработчик выбора заказа."""
-        selected = self.tree.selection()
-        if not selected:
-            messagebox.showwarning("Ошибка", "Выберите заказ")
-            return
+def on_order_select(self, event=None):
+    selected = self.tree.selection()
+    if not selected:
+        return
+    item = self.tree.item(selected[0])
+    order_id = item["values"][0]
 
-        # Получаем данные выбранного заказа
-        item = self.tree.item(selected[0])
-        order_id = item["values"][0]
-
-        # Открываем окно состава заказа
-        from order_items_window import OrderItemsWindow # type: ignore
-        OrderItemsWindow(self.window, order_id)
+    from order_items_window import OrderItemsWindow
+    OrderItemsWindow(self.window, order_id, self.current_user)
