@@ -1,6 +1,12 @@
 """Форма просмотра товара."""
 import tkinter as tk
 from tkinter import ttk, messagebox
+from tkinter import messagebox
+from order_manager import (
+    add_order_to_db,
+    update_product_quantity,
+    get_product_quantity
+)
 
 from styles import (
     COLOR_MAIN_BG, COLOR_SECONDARY_BG, COLOR_ACCENT,
@@ -118,18 +124,34 @@ class ViewForm:
     
     def add_to_order(self):
         """Обработчик кнопки «Добавить в заказ»."""
-        if not self.on_add_to_order:
-            messagebox.showinfo("Информация", "Функция в разработке")
-            return
-            
         if not self.product:
             messagebox.showerror("Ошибка", "Товар не выбран")
             return
-            
+
         try:
-            self.on_add_to_order(self.product)
-            messagebox.showinfo("Успех", "Товар добавлен в заказ")
+            product_id = self.product[0]
+            current_qty = get_product_quantity(product_id)
+
+            if current_qty < 1:
+                title = self.product[3] if len(self.product) > 3 else "товар"
+                messagebox.showwarning("Товар закончился", f"Товара «{title}» больше нет")
+                return
+
+            new_qty = current_qty - 1
+
+            order_id = add_order_to_db("Иванов Иван Иванович", product_id, 1)
+            if order_id is None:
+                messagebox.showerror("Ошибка", "Не удалось сохранить заказ")
+                return
+
+            update_product_quantity(product_id, new_qty)
+
+            messagebox.showinfo("Успех", f"Заказ №{order_id} оформлен")
+
+            if hasattr(self, "on_add_to_order") and self.on_add_to_order:
+                self.on_add_to_order()
+
         except Exception as e:
-            messagebox.showerror("Ошибка заказа", f"Не удалось добавить товар:\n{e}")
-        pass
-    
+            messagebox.showerror("Ошибка", f"Не удалось оформить заказ:\n{e}")
+            pass
+        

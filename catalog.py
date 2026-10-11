@@ -11,15 +11,17 @@ from styles import (
     FONT_SIZE_NORMAL, FONT_SIZE_HEADER, font
 )
 # Функция для открытия формы просмотра
-def _open_view(parent, product):
+def _open_view(parent, product, refresh=None):
+    """Открывает форму просмотра товара."""
     from view_form import ViewForm
-    ViewForm(parent, product)
+    ViewForm(parent, product, on_add_to_order=refresh)
 
+def create_product_card(parent, product, card, refresh=None):
+    card.bind("<Button-1>", lambda e: _open_view(parent, product, refresh))
 
-def create_product_card(parent, product):
     """Создаёт карточку товара по макету."""
     qty = product[5]
-    bg_color = _get_card_color(qty)
+    bg_color = _get_card_color(qty)    
 
     # Диагностика
     print(f"[CARD] id={product[0]}, name={product[1]}, "
@@ -35,7 +37,6 @@ def create_product_card(parent, product):
         child.bind("<Button-1>", lambda e: _open_view(parent, product))
     return card
 
-    return card
 
 def _get_card_color(qty):
     """
