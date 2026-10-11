@@ -2,7 +2,6 @@
 import sqlite3
 from tkinter import messagebox
 from config import DB_PATH
-from order_manager import get_product_quantity
 
 def get_all_products():
     conn = sqlite3.connect(DB_PATH)
@@ -81,14 +80,7 @@ def add_to_order(self):
 
     qty = result  # result — это число
 
-    # 3. Проверяем, что количество не больше доступного
-    current_qty = get_product_quantity(self.product[0])
-    if qty > current_qty: # type: ignore
-        messagebox.showwarning("Ошибка",
-                               f"Доступно только {current_qty} шт.")
-        return
-
-    # 4. Вызываем callback
+    # 3. Вызываем callback
     if self.on_add_to_order:
         try:
             self.on_add_to_order(self.product, qty, self.size_var.get())
