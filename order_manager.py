@@ -8,83 +8,91 @@ def get_connection():
     """Соединение с БД."""
     return sqlite3.connect(DB_PATH)
 
-from datetime import datetime
 
-def add_order_to_db(client, product_id, quantity):
+def add_order_to_db(client, date=None):
     """
     Добавляет новый заказ в БД.
     :param client: ФИО клиента
-    :param product_id: id товара
-    :param quantity: количество
+    :param date: дата заказа (по умолчанию — сегодня)
     :return: id заказа или None при ошибке
     """
+    if date is None:
+        date = datetime.now().strftime("%Y-%m-%d")
+
     conn = get_connection()
     cur = conn.cursor()
 
-    # Получаем текущую дату
-    дата = datetime.now().strftime("%Y-%m-%d")
-
     cur.execute(
-        "INSERT INTO Заказ (дата, клиент, товар_id, количество) VALUES (?, ?, ?, ?)",
-        (дата, client, product_id, quantity)
+        "INSERT INTO Заказ (дата, клиент) VALUES (?, ?)",
+        (date, client)
     )
     conn.commit()
     order_id = cur.lastrowid
     conn.close()
 
     return order_id
-    pass
 
-def update_product_quantity(product_id, new_quantity):
-    """Обновляет количество товара в БД."""
-    conn = None
-    try:
-        conn = get_connection()
-        cur = conn.cursor()
-        cur.execute(
-            "UPDATE Товар SET количество = ? WHERE id = ?",
-            (new_quantity, product_id)
-        )
-        conn.commit()
-        return True
-    except Exception as e:
-        print(f"Ошибка update_product_quantity: {e}")
-        return False
-    finally:
-        if conn:
-            conn.close()
-    pass
-
-
-def get_last_order_id():
-    """Возвращает id последнего заказа."""
-    conn = None
-    try:
-        conn = get_connection()
-        cur = conn.cursor()
-        cur.execute("SELECT MAX(id) FROM Заказ")
-        row = cur.fetchone()
-        return row[0] if row and row[0] is not None else None
-    except Exception as e:
-        print(f"Ошибка get_last_order_id: {e}")
-        return None
-    finally:
-        if conn:
-            conn.close()
-    pass
-
-
-def get_product_quantity(product_id):
+def add_order_item(order_id, product_id, size, quantity, price):
     """
-    Возвращает количество товара по id.
-    
+    Добавляет позицию в состав заказа.
+    :param order_id: id заказа
     :param product_id: id товара
-    :return: количество или 0
+    :param size: размер
+    :param quantity: количество
+    :param price: цена за единицу на момент заказа
+    :return: id позиции или None
     """
-    # ГОТОВО
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT количество FROM Товар WHERE id = ?", (product_id,))
-    row = cur.fetchone()
+
+    cur.execute(
+        "INSERT INTO Состав_заказа "
+        "(заказ_id, товар_id, размер, количество, цена) "
+        "VALUES (?, ?, ?, ?, ?)",
+        (order_id, product_id, size, quantity, price)
+    )
+    conn.commit()
+    item_id = cur.lastrowid
     conn.close()
-    return row[0] if row else 0
+
+    return item_id
+
+def create_order(client, items):
+    """
+    Создаёт заказ с несколькими позициями.
+    :param client: ФИО клиента
+    :param items: список кортежей (product_id, size, quantity, price)
+    :return: id заказа
+    """
+    conn = get_connection()
+    cur = conn.cursor()
+
+    try:
+        # 1. Создаём заказ
+        date = datetime.now().strftime("%Y-%m-%d")
+        cur.execute(
+            "INSERT INTO Заказ (дата, клиент) VALUES (?, ?)",
+            (date, client)
+        )
+        order_id = cur.lastrowid
+
+        # 2. Добавляем позиции
+        for product_id, size, quantity, price in items:
+            cur.execute(
+                "INSERT INTO Состав_заказа "
+                "(заказ_id, товар_id, размер, количество, цена) "
+                "VALUES (?, ?, ?, ?, ?)",
+                (order_id, product_id, size, quantity, price)
+            )
+
+        # 3. Фиксируем изменения
+        conn.commit()
+        return order_id
+
+    except Exception as e:
+        conn.rollback()
+        print(f"Ошибка создания заказа: {e}")
+        return None
+
+    finally:
+        conn.close()
