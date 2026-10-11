@@ -2,6 +2,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from tkinter import messagebox
+from db_products import get_product_sizes
 from order_manager import (
     add_order_to_db,
     update_product_quantity,
@@ -41,64 +42,35 @@ class ViewForm:
         self.build_ui()
     
     def build_ui(self):
-        if len(self.product) > 9:
-            self._add_field(info_frame, "Описание", self.product[9]) # type: ignore
-        """Строит интерфейс формы."""
-        # Шапка — ГОТОВО
-        header = tk.Frame(self.window, bg=COLOR_SECONDARY_BG, height=60)
-        header.pack(fill="x")
-        header.pack_propagate(False)
-        
-        tk.Label(header, text="КАРТОЧКА ТОВАРА",
-                 font=font(FONT_SIZE_TITLE, bold=True),
-                 bg=COLOR_SECONDARY_BG).pack(pady=15)
-        
-        # Основная область — ГОТОВО
-        main = tk.Frame(self.window, bg=COLOR_MAIN_BG)
-        main.pack(fill="both", expand=True, padx=20, pady=20)
-        
-        # Изображение — ГОТОВО
-        img_frame = tk.Frame(main, bg=COLOR_MAIN_BG)
-        img_frame.pack(side="left", padx=10)
-        
-        photo = get_product_image(self.product[7], size=(200, 200))
-        if photo:
-            img_label = tk.Label(img_frame, image=photo, bg=COLOR_MAIN_BG)
-            img_label.image = photo # type: ignore
-            img_label.pack()
-        
-        # Информация — ДОПИШИТЕ
-        info_frame = tk.Frame(main, bg=COLOR_MAIN_BG)
-        info_frame.pack(side="left", fill="both", expand=True, padx=20)
-        
-        # TODO: добавить поля через _add_field
-        self._add_field(info_frame, "Производство", self.product[3])
-        self._add_field(info_frame, "Наименование", self.product[1])
-        self._add_field(info_frame, "Категория", self.product[2])
-        self._add_field(info_frame, "Состав", self.product[4])
-        self._add_field(info_frame, "Цена", f"{self.product[5]} руб.")
-        self._add_field(info_frame, "Размеры", self.product[8])
-        tk.Label(img_frame, text="Количество:", bg=COLOR_MAIN_BG).pack(side="left", padx=5)
-        self.qty_entry = tk.Entry(img_frame)
-        self.qty_entry.pack(side="left")
-        self.qty_entry.insert(0, "1")
-        # Кнопки — ДОПИШИТЕ
-        btn_frame = tk.Frame(self.window, bg=COLOR_MAIN_BG)
-        btn_frame.pack(fill="x", pady=10)
-        
-        # TODO: кнопка "Добавить в заказ" -> self.add_to_order
-        btn_add = tk.Button(
-            btn_frame, text="Добавить в заказ", command=self.add_to_order,
-            bg=COLOR_ACCENT, fg="white", font=font(FONT_SIZE_NORMAL), padx=15, pady=5
-        )
-        btn_add.pack(side="left", padx=20)
-        
-        # TODO: кнопка "Назад" -> self.window.destroy
-        btn_back = tk.Button(
-            btn_frame, text="Назад", command=self.window.destroy,
-            bg=COLOR_ACCENT, fg="white", font=font(FONT_SIZE_NORMAL), padx=15, pady=5
-        )
-        btn_back.pack(side="right", padx=20)
+        # === Поле ввода количества ===
+        qty_frame = tk.Frame(main, bg=COLOR_MAIN_BG) # type: ignore
+        qty_frame.pack(fill="x", pady=10)
+
+        tk.Label(qty_frame, text="Количество:", font=font(FONT_SIZE_NORMAL), 
+         bg=COLOR_MAIN_BG).pack(side="left", padx=5)
+
+        self.qty_var = tk.StringVar(value="1")
+        qty_entry = tk.Entry(qty_frame, textvariable=self.qty_var, width=5, 
+        font=font(FONT_SIZE_NORMAL))
+        qty_entry.pack(side="left", padx=5)
+
+        # === Выбор размера (если есть) ===
+        size_frame = tk.Frame(main, bg=COLOR_MAIN_BG) # type: ignore
+        size_frame.pack(fill="x", pady=10)
+
+        tk.Label(size_frame, text="Размер:", font=font(FONT_SIZE_NORMAL), 
+        bg=COLOR_MAIN_BG).pack(side="left", padx=5)
+
+        # Получаем размеры из БД (если есть)
+        sizes = get_product_sizes(self.product[0]) # Функция из db_products.py
+        if not sizes:
+            sizes = ["-"]
+
+        self.size_var = tk.StringVar(value=sizes[0])
+        size_combo = ttk.Combobox(size_frame, textvariable=self.size_var, 
+                                values=sizes, state="readonly", width=5, 
+                                font=font(FONT_SIZE_NORMAL))
+        size_combo.pack(side="left", padx=5)
     
     def _add_field(self, parent, label, value):
         """

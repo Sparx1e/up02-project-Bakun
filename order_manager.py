@@ -8,27 +8,31 @@ def get_connection():
     """Соединение с БД."""
     return sqlite3.connect(DB_PATH)
 
-def add_order_to_db(client, product_id, quantity):
-    """Добавляет новый заказ в БД."""
-    conn = None
-    try:
-        conn = get_connection()
-        cur = conn.cursor()
-        date_str = datetime.now().strftime("%Y-%m-%d")
+from datetime import datetime
 
-        cur.execute(
-            "INSERT INTO Заказ (дата, клиент, товар_id, количество) VALUES (?, ?, ?, ?)",
-            (date_str, client, product_id, quantity)
-        )
-        conn.commit()
-        order_id = cur.lastrowid
-        return order_id
-    except Exception as e:
-        print(f"Ошибка add_order_to_db: {e}")
-        return None
-    finally:
-        if conn:
-            conn.close()
+def add_order_to_db(client, product_id, quantity):
+    """
+    Добавляет новый заказ в БД.
+    :param client: ФИО клиента
+    :param product_id: id товара
+    :param quantity: количество
+    :return: id заказа или None при ошибке
+    """
+    conn = get_connection()
+    cur = conn.cursor()
+
+    # Получаем текущую дату
+    дата = datetime.now().strftime("%Y-%m-%d")
+
+    cur.execute(
+        "INSERT INTO Заказ (дата, клиент, товар_id, количество) VALUES (?, ?, ?, ?)",
+        (дата, client, product_id, quantity)
+    )
+    conn.commit()
+    order_id = cur.lastrowid
+    conn.close()
+
+    return order_id
     pass
 
 def update_product_quantity(product_id, new_quantity):
