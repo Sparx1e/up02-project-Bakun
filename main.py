@@ -9,6 +9,9 @@ def load_products(self, db):
 
 def refresh_catalog(self):
     """Обновляет каталог."""
+    # Удаляем все существующие карточки
     for widget in self.catalog_frame.winfo_children():
         widget.destroy()
+
+    # Загружаем товары заново
     self.load_products()

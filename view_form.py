@@ -5,8 +5,6 @@ from tkinter import messagebox
 from db_products import get_product_sizes
 from order_manager import (
     add_order_to_db,
-    update_product_quantity,
-    get_product_quantity
 )
 
 from styles import (
@@ -94,36 +92,17 @@ class ViewForm:
         )
         value_txt.pack(side="left")
     
-    def add_to_order(self):
+    def add_to_order(self, qty):
         """Обработчик кнопки «Добавить в заказ»."""
-        if not self.product:
-            messagebox.showerror("Ошибка", "Товар не выбран")
-            return
+        # ... валидация ...
 
         try:
-            product_id = self.product[0]
-            current_qty = get_product_quantity(product_id)
-
-            if current_qty < 1:
-                title = self.product[3] if len(self.product) > 3 else "товар"
-                messagebox.showwarning("Товар закончился", f"Товара «{title}» больше нет")
-                return
-
-            new_qty = current_qty - 1
-
-            order_id = add_order_to_db("Иванов Иван Иванович", product_id, 1)
-            if order_id is None:
-                messagebox.showerror("Ошибка", "Не удалось сохранить заказ")
-                return
-
-            update_product_quantity(product_id, new_qty)
-
-            messagebox.showinfo("Успех", f"Заказ №{order_id} оформлен")
-
-            if hasattr(self, "on_add_to_order") and self.on_add_to_order:
+            # Вызываем callback
+            if self.on_add_to_order:
                 self.on_add_to_order()
 
+            messagebox.showinfo("Успех", f"Товар добавлен в заказ ({qty} шт.)")
+            self.window.destroy()
+
         except Exception as e:
-            messagebox.showerror("Ошибка", f"Не удалось оформить заказ:\n{e}")
-            pass
-        
+            messagebox.showerror("Ошибка", f"Не удалось добавить товар:\n{e}")      

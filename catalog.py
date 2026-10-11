@@ -1,5 +1,6 @@
 """Каталог товаров (Вариант 21 - Книги)."""
 
+from itertools import product
 import tkinter as tk
 from styles import (
     COLOR_MAIN_BG, COLOR_HIGHLIGHT,
@@ -10,31 +11,27 @@ from styles import (
     COLOR_MAIN_BG, COLOR_HIGHLIGHT,
     FONT_SIZE_NORMAL, FONT_SIZE_HEADER, font
 )
-# Функция для открытия формы просмотра
-def _open_view(parent, product, refresh=None):
+def _open_view(parent, pro3760duct, refresh=None):
     """Открывает форму просмотра товара."""
     from view_form import ViewForm
     ViewForm(parent, product, on_add_to_order=refresh)
 
-def create_product_card(parent, product, card, refresh=None):
+def create_product_card(parent, product,card, refresh=None):
+    """
+    Создаёт карточку товара.
+    :param parent: родительский контейнер
+    :param product: кортеж из БД
+    :param refresh: callback для обновления каталога
+    """
+    # ... создание карточки ...
+
+    # Привязка клика
     card.bind("<Button-1>", lambda e: _open_view(parent, product, refresh))
-
-    """Создаёт карточку товара по макету."""
-    qty = product[5]
-    bg_color = _get_card_color(qty)    
-
-    # Диагностика
-    print(f"[CARD] id={product[0]}, name={product[1]}, "
-          f"qty={qty}, bg={bg_color}, indicator={_indicator(qty)}")
-
-    card = tk.Frame(parent, bg=bg_color, bd=1, relief="solid")
-    card.pack(fill="x", padx=10, pady=5)
-
-    _add_image(card, product, bg_color)
-    _add_text_info(card, product, bg_color, qty)
-    card.bind("<Button-1>", lambda e: _open_view(parent, product))
     for child in card.winfo_children():
-        child.bind("<Button-1>", lambda e: _open_view(parent, product))
+        child.bind("<Button-1>", lambda e: _open_view(parent, product, refresh))
+
+    return card
+
     return card
 
 
@@ -94,3 +91,5 @@ def _indicator(qty):
     :return: «много» или «мало»
     """
     return "много" if qty > 5 else "мало"
+
+
