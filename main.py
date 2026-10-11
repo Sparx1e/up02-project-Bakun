@@ -1,6 +1,7 @@
 from catalog import create_product_card
 from error_handler import safe_call
 
+
 def load_products(self, db):
     """Загружает товары с обработкой ошибок."""
     products = safe_call(db.get_all_products) or []
@@ -15,3 +16,8 @@ def refresh_catalog(self):
 
     # Загружаем товары заново
     self.load_products()
+
+def open_orders(self):
+    """Открывает окно списка заказов."""
+    from orders_window import OrdersWindow
+    OrdersWindow(self.root)
