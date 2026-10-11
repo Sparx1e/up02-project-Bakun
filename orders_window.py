@@ -9,9 +9,8 @@ import order_manager as om
 
 
 class OrdersWindow:
-    """Окно списка заказов."""
-
-    def __init__(self, parent):
+    def __init__(self, parent, current_user=None):
+        self.current_user = current_user
         """
         Инициализация окна.
         :param parent: родительское окно
